@@ -216,6 +216,10 @@ else
 	exit 1
 fi
 
+if [ "${PX4_GZ_WORLD}" = "radiation_field" ]; then
+    radiation_detector start
+fi
+
 # NOTE: Only for rover_mecanum and spacecraft_2d. All other models have
 # the magnetometer sensor in the model.sdf.
 if param compare -s SENS_EN_MAGSIM 1

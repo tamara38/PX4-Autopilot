@@ -139,6 +139,10 @@ int GZBridge::init()
 		}
 	}
 
+	if(!subscribeRadiation(true)){
+		return PX4_ERROR;
+	}
+
 	// ESC mixing interface
 	if (!_mixing_interface_esc.init(_model_name)) {
 		PX4_ERR("failed to init ESC output");
@@ -339,6 +343,18 @@ bool GZBridge::subscribeOpticalFlow(bool required)
 	return true;
 }
 
+bool GZBridge::subscribeRadiation(bool required){
+	std::string radiation_topic = "/radiation/reading";
+
+	if (!_node.Subscribe(radiation_topic, &GZBridge::radiationCallback, this)) {
+		PX4_ERR("failed to subscribe to %s", radiation_topic.c_str());
+		return required ? false : true;
+	}
+
+	return true;
+
+}
+
 void GZBridge::clockCallback(const gz::msgs::Clock &msg)
 {
 	// NOTE: PX4-SITL time needs to stay in sync with gz, so this clock-sync will happen on every callback.
@@ -410,6 +426,17 @@ void GZBridge::airPressureCallback(const gz::msgs::FluidPressure &msg)
 {
 	_px4_baro.set_temperature(_temperature); // this will be static if no airspeed sensor is on the model.
 	_px4_baro.update(hrt_absolute_time(), msg.pressure());
+}
+
+void GZBridge::radiationCallback(const gz::msgs::Float &msg){
+
+	sensor_radiation_s radiation_data = {};
+
+	radiation_data.timestamp = hrt_absolute_time();
+	radiation_data.radiation_reading = msg.data();
+
+	_sensor_radiation_pub.publish(radiation_data);
+
 }
 
 void GZBridge::airspeedCallback(const gz::msgs::AirSpeed &msg)

@@ -61,6 +61,7 @@
 #include <uORB/topics/differential_pressure.h>
 #include <uORB/topics/sensor_gps.h>
 #include <uORB/topics/sensor_optical_flow.h>
+#include <uORB/topics/sensor_radiation.h>
 #include <uORB/topics/obstacle_distance.h>
 #include <uORB/topics/wheel_encoders.h>
 #include <uORB/topics/vehicle_angular_velocity.h>
@@ -81,6 +82,7 @@
 #include <gz/msgs/laserscan.pb.h>
 #include <gz/msgs/stringmsg.pb.h>
 #include <gz/msgs/scene.pb.h>
+#include <gz/msgs/float.pb.h>
 // Custom PX4 proto
 #include <opticalflow.pb.h>
 
@@ -124,6 +126,7 @@ private:
 	bool subscribeAirPressure(bool required);
 	bool subscribeNavsat(bool required);
 	bool subscribeOpticalFlow(bool required);
+	bool subscribeRadiation(bool required);
 
 	void clockCallback(const gz::msgs::Clock &msg);
 	void airspeedCallback(const gz::msgs::AirSpeed &msg);
@@ -136,6 +139,7 @@ private:
 	void laserScanCallback(const gz::msgs::LaserScan &msg);
 	void opticalFlowCallback(const px4::msgs::OpticalFlow &msg);
 	void magnetometerCallback(const gz::msgs::Magnetometer &msg);
+	void radiationCallback(const gz::msgs::Float &msg);
 
 	static void rotateQuaternion(gz::math::Quaterniond &q_FRD_to_NED, const gz::math::Quaterniond q_FLU_to_ENU);
 
@@ -162,6 +166,7 @@ private:
 	uORB::PublicationMulti<sensor_gps_s>          _sensor_gps_pub{ORB_ID(sensor_gps)};
 	uORB::PublicationMulti<vehicle_odometry_s>    _visual_odometry_pub{ORB_ID(vehicle_visual_odometry)};
 	uORB::PublicationMulti<sensor_optical_flow_s> _optical_flow_pub{ORB_ID(sensor_optical_flow)};
+	uORB::Publication<sensor_radiation_s>         _sensor_radiation_pub{ORB_ID(sensor_radiation)};
 
 	failure_injection::Config _failure_config;
 	failure_injection::Stuck<sensor_gps_s> _gps_stuck;

@@ -1,0 +1,5 @@
+menuconfig MODULES_RADIATION_DETECTOR
+	bool "Radiation Detector Module"
+	default n
+	---help---
+		Enables RadiationDetector module which detects radiation
